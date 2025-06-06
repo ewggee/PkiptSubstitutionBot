@@ -33,24 +33,20 @@ dotnet run
 
 **Как помочь проекту:**
 
-1. [Форкните репозиторий](https://github.com/ewggee/PkiptSubstitutionBot/fork)
-
-2. Создайте ветку 
+1.
 ```bash
 git checkout -b feature/your-feature
 ```
 
-3. Закоммитьте
+2.
 ```bash
 git commit -am 'Add some feature'
 ```
 
-4. Запушьте
+3.
 ```bash
 git push origin feature/your-feature
 ```
-
-5. Создайте Pull Request
 
 ---
 
