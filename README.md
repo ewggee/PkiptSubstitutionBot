@@ -33,17 +33,17 @@ dotnet run
 
 **Как помочь проекту:**
 
-1.
+1. Создайте новую ветку
 ```bash
 git checkout -b feature/your-feature
 ```
 
-2.
+2. Подтвердите изменения
 ```bash
 git commit -am 'Add some feature'
 ```
 
-3.
+3. Отправьте изменения в удалённый репозиторий
 ```bash
 git push origin feature/your-feature
 ```
