@@ -30,6 +30,8 @@ public class SubstitutionRepository
 
     public async Task UpdateSubstitutionAsync(DbSubstitution substitution)
     {
+        //Черный ворон кружит под окном
+
         await _dapperContext.Execute(new QueryObject(
             sql: "UPDATE substitutions SET image = @image WHERE date = @date",
             parameters: new { image = substitution.Image, date = substitution.Date }));

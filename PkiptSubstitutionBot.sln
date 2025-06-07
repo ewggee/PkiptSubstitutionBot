@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35013.160
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PkiptSubstitutionBot.Application", "PkiptSubstitutionBot.Application\PkiptSubstitutionBot.Application.csproj", "{84E2284B-BF13-4673-A309-CA663A9C9D1C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PkiptSubstitutionBot.Application", "PkiptSubstitutionBot.Application\PkiptSubstitutionBot.Application.csproj", "{84E2284B-BF13-4673-A309-CA663A9C9D1C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PkiptSubstitutionBot.Tests", "PkiptSubstitutionBot.Tests\PkiptSubstitutionBot.Tests.csproj", "{C578CDE0-C65E-4A9C-B6FD-155855871A26}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{84E2284B-BF13-4673-A309-CA663A9C9D1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84E2284B-BF13-4673-A309-CA663A9C9D1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84E2284B-BF13-4673-A309-CA663A9C9D1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C578CDE0-C65E-4A9C-B6FD-155855871A26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C578CDE0-C65E-4A9C-B6FD-155855871A26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C578CDE0-C65E-4A9C-B6FD-155855871A26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C578CDE0-C65E-4A9C-B6FD-155855871A26}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
