@@ -1,0 +1,217 @@
+@{
+    ViewData["Title"] = "Отправка замен";
+}
+
+<h1 class="mb-4 text-center">@ViewData["Title"]</h1>
+
+<div class="form-narrow">
+<form id="uploadForm" asp-action="UploadImage" method="post" enctype="multipart/form-data" autocomplete="off">
+    <div class="form-group mb-4">
+        <label class="mb-2" for="image">Изображения замены:</label>
+        <input type="file" name="images" id="image" class="form-control" accept="image/*" multiple style="display: none;" />
+        <label for="image" class="custom-file-upload btn btn-secondary w-100">Выберите изображения</label>
+        <small class="form-text text-muted text-center mt-2">Вы можете выбрать до 5 изображений.</small>
+        <div id="imageThumbnails" class="d-flex flex-nowrap mt-2" style="gap: 10px; overflow-x: auto; padding-bottom: 10px;"></div>
+    </div>
+    <div class="form-group mb-4">
+        <label class="mb-2"  for="date">Дата замены:</label>
+        <input type="date" name="date" id="date" class="form-control" />
+    </div>
+    <div class="form-group mb-4">
+        <label class="mb-2" for="messageText">Сообщение к заменам:</label>
+        <textarea placeholder="Текст сообщения (опционально)" name="messageText" id="messageText" class="form-control" rows="3"></textarea>
+    </div>
+    <button type="button" class="btn btn-primary w-100 mt-4" id="showConfirmModal">Загрузить</button>
+</form>
+</div>
+
+<div id="globalMessage" class="popup-message" style="display:none;"></div>
+
+<!-- Модальное окно подтверждения -->
+<div id="confirmModalBackdrop" class="modal-backdrop" style="display:none;"></div>
+<div id="confirmModal" class="modal-custom" style="display:none;">
+    <div class="modal-header">Вы точно хотите отправить эти замены?</div>
+    <div class="modal-body text-center">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <div id="previewImagesContainer" style="display: flex; overflow-x: auto; max-width: 100%; padding-bottom: 10px; gap: 10px;">
+                <!-- Изображения будут добавлены сюда -->
+            </div>
+            <div id="noImageText" style="color: #bbb; margin-top: 10px;">Изображения не выбраны</div>
+            <div id="datePreview" style="margin-top: 12px; color: #b8e0ff; font-size: 1.05em;"></div>
+            <div id="messageTextPreview" style="white-space: pre-line; color: #fff; background: #181a1b; border-radius: 8px; padding: 8px; margin-top: 12px; max-width: 100%; max-height: 100px; overflow-y: auto; overflow-x: hidden; display: none;"></div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="cancelModal">Отмена</button>
+        <button type="button" class="btn btn-primary" id="confirmSend">Подтвердить</button>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const showModalBtn = document.getElementById('showConfirmModal');
+    const modal = document.getElementById('confirmModal');
+    const backdrop = document.getElementById('confirmModalBackdrop');
+    const cancelBtn = document.getElementById('cancelModal');
+    const confirmBtn = document.getElementById('confirmSend');
+    const form = document.getElementById('uploadForm');
+    const imageInput = document.getElementById('image');
+    const imageThumbnailsContainer = document.getElementById('imageThumbnails');
+    const previewImagesContainer = document.getElementById('previewImagesContainer');
+    const noImageText = document.getElementById('noImageText');
+    const dateInput = document.getElementById('date');
+    const datePreview = document.getElementById('datePreview');
+    const messageTextInput = document.getElementById('messageText');
+    const messageTextPreview = document.getElementById('messageTextPreview');
+    const globalMessage = document.getElementById('globalMessage');
+
+    let selectedFiles = [];
+    const MAX_FILES = 5;
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '';
+        const d = new Date(dateStr);
+        if (isNaN(d)) return dateStr;
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day}.${month}.${year}`;
+    }
+
+    function showPopup(message, type) {
+        globalMessage.textContent = message;
+        globalMessage.className = `popup-message show popup-${type}`;
+        globalMessage.style.display = 'block';
+        setTimeout(() => {
+            globalMessage.classList.remove('show');
+            globalMessage.style.display = 'none';
+        }, 3000);
+    }
+
+    function renderThumbnails() {
+        imageThumbnailsContainer.innerHTML = '';
+        previewImagesContainer.innerHTML = '';
+        noImageText.style.display = selectedFiles.length === 0 ? 'block' : 'none';
+
+        selectedFiles.forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Thumbnail for form
+                const thumbDiv = document.createElement('div');
+                thumbDiv.className = 'position-relative';
+                thumbDiv.innerHTML = `
+                    <img src="${e.target.result}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;" />
+                    <span class="remove-thumb" data-index="${index}" style="position: absolute; top: -5px; right: -5px; background: #dc3545; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 0.8em; display: flex; justify-content: center; align-items: center; cursor: pointer;">&times;</span>
+                `;
+                imageThumbnailsContainer.appendChild(thumbDiv);
+
+                // Thumbnail for modal preview
+                const previewImg = document.createElement('img');
+                previewImg.src = e.target.result;
+                previewImg.style = "height: 150px; object-fit: cover; border-radius: 8px;";
+                previewImagesContainer.appendChild(previewImg);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function updateFileInput() {
+        const dataTransfer = new DataTransfer();
+        selectedFiles.forEach(file => dataTransfer.items.add(file));
+        imageInput.files = dataTransfer.files;
+    }
+
+    imageInput.addEventListener('change', function() {
+        const newFiles = Array.from(this.files);
+        const currentFileCount = selectedFiles.length;
+        let filesToAdd = [];
+
+        for (const file of newFiles) {
+            if (!file.type.startsWith('image/')) {
+                showPopup(`Неверный формат файла: ${file.name}. Выберите изображение.`, 'error');
+                continue; // Пропустить этот файл
+            }
+            filesToAdd.push(file);
+        }
+
+        if (currentFileCount + filesToAdd.length > MAX_FILES) {
+            showPopup(`Можно выбрать не более ${MAX_FILES} изображений.`, 'error');
+            this.value = ''; // Очистить input
+            return;
+        }
+
+        selectedFiles = [...selectedFiles, ...filesToAdd];
+        // Удалить дубликаты, если есть
+        selectedFiles = Array.from(new Set(selectedFiles));
+        renderThumbnails();
+        updateFileInput(); // Обновить фактический input type="file" после изменений
+    });
+
+    // Делегирование событий для кнопок удаления (крестиков)
+    imageThumbnailsContainer.addEventListener('click', function(event) {
+        const target = event.target;
+        if (target.classList.contains('remove-thumb')) {
+            const indexToRemove = parseInt(target.dataset.index);
+            selectedFiles.splice(indexToRemove, 1);
+            renderThumbnails(); // Перерисовать миниатюры после удаления
+            updateFileInput(); // Обновить фактический input type="file"
+        }
+    });
+
+    showModalBtn.onclick = function(e) {
+        e.preventDefault();
+
+        if (selectedFiles.length === 0) {
+            showPopup('Выберите изображения', 'error');
+            return;
+        }
+
+        if (!dateInput.value) {
+            showPopup('Выберите дату', 'error');
+            return;
+        }
+
+        // При показе модалки также нужно перерисовать, чтобы были актуальные превью
+        renderThumbnails();
+
+        if (dateInput.value) {
+            datePreview.textContent = 'Дата: ' + formatDate(dateInput.value);
+            datePreview.style.display = 'block';
+        } else {
+            datePreview.textContent = '';
+            datePreview.style.display = 'none';
+        }
+
+        const messageText = messageTextInput.value.trim();
+        if (messageText) {
+            messageTextPreview.textContent = messageText;
+            messageTextPreview.style.display = 'block';
+        } else {
+            messageTextPreview.textContent = '';
+            messageTextPreview.style.display = 'none';
+        }
+
+        modal.style.display = 'block';
+        backdrop.style.display = 'block';
+    };
+
+    cancelBtn.onclick = function() {
+        modal.style.display = 'none';
+        backdrop.style.display = 'none';
+    };
+
+    confirmBtn.onclick = function() {
+        modal.style.display = 'none';
+        backdrop.style.display = 'none';
+        form.submit();
+    };
+    
+    backdrop.onclick = cancelBtn.onclick;
+
+    // Отображение успешного сообщения, если оно есть
+    const message = '@Html.Raw(Json.Serialize(ViewBag.Message))';
+    if (message && message !== 'null') {
+        showPopup('Замены отправлены!', 'success');
+    }
+</script>
+} 

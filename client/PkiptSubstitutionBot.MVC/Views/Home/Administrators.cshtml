@@ -1,0 +1,194 @@
+@model IEnumerable<AdminViewModel>
+
+@{
+    ViewData["Title"] = "Список администраторов";
+}
+
+<h1 class="mb-4 text-center">@ViewData["Title"]</h1>
+
+<div class="form-narrow">
+    <button type="button" class="btn btn-primary w-100 mb-4" id="showAddAdminModal">Добавить новую учётную запись</button>
+
+    @if (Model != null && Model.Any())
+    {
+        <div style="max-height: 400px; overflow-y: auto; border: 1px solid #444; border-radius: 8px; ">
+            <table class="table table-dark table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>Логин</th>
+                        <th style="width: 1%; white-space: nowrap;" />
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var admin in Model)
+                    {
+                        <tr>
+                            <td>@admin.Username</td>
+                            <td style="width: 1%; white-space: nowrap;">
+                                <button type="button" class="btn btn-danger btn-sm delete-admin-btn" data-username="@admin.Username">Удалить</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center" role="alert">
+            Нет зарегистрированных администраторов.
+        </div>
+    }
+</div>
+
+<div id="globalMessage" class="popup-message" style="display:none;"></div>
+
+<!-- Модальное окно для добавления администратора -->
+<div id="addAdminModalBackdrop" class="modal-backdrop" style="display:none;"></div>
+<div id="addAdminModal" class="modal-custom" style="display:none;">
+    <div class="modal-header">Добавить нового администратора</div>
+    <div class="modal-body text-center">
+        <form id="createAdminForm" asp-action="CreateAdmin" method="post" autocomplete="off">
+            <div class="form-group">
+                <label class="mb-2" for="newUsername">Логин:</label>
+                <input type="text" name="username" id="newUsername" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label class="mb-2" for="newPassword">Пароль:</label>
+                <input type="password" name="password" id="newPassword" class="form-control" />
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="cancelAddAdminModal">Отмена</button>
+        <button type="button" class="btn btn-primary" id="confirmAddAdmin">Добавить</button>
+    </div>
+</div>
+
+<!-- Модальное окно подтверждения удаления -->
+<div id="deleteAdminModalBackdrop" class="modal-backdrop" style="display:none;"></div>
+<div id="deleteAdminModal" class="modal-custom" style="display:none;">
+    <div class="modal-header">Подтверждение удаления</div>
+    <div class="modal-body text-center">
+        <p>Вы действительно хотите удалить администратора <strong id="adminToDelete"></strong>?</p>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="cancelDeleteAdminModal">Отмена</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteAdmin">Удалить</button>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const globalMessage = document.getElementById('globalMessage');
+
+    function showPopup(message, type) {
+        globalMessage.textContent = message;
+        globalMessage.className = `popup-message show popup-${type}`;
+        globalMessage.style.display = 'block';
+        setTimeout(() => {
+            globalMessage.classList.remove('show');
+            globalMessage.style.display = 'none';
+        }, 3000);
+    }
+
+    // Логика для модального окна добавления администратора
+    const showAddAdminModalBtn = document.getElementById('showAddAdminModal');
+    const addAdminModal = document.getElementById('addAdminModal');
+    const addAdminModalBackdrop = document.getElementById('addAdminModalBackdrop');
+    const cancelAddAdminModalBtn = document.getElementById('cancelAddAdminModal');
+    const confirmAddAdminBtn = document.getElementById('confirmAddAdmin');
+    const createAdminForm = document.getElementById('createAdminForm');
+    const newUsernameInput = document.getElementById('newUsername');
+    const newPasswordInput = document.getElementById('newPassword');
+
+    showAddAdminModalBtn.onclick = function() {
+        addAdminModal.style.display = 'block';
+        addAdminModalBackdrop.style.display = 'block';
+        // Очистка полей и сброс состояния валидации
+        newUsernameInput.value = '';
+        newPasswordInput.value = '';
+    };
+
+    cancelAddAdminModalBtn.onclick = function() {
+        addAdminModal.style.display = 'none';
+        addAdminModalBackdrop.style.display = 'none';
+    };
+
+    confirmAddAdminBtn.onclick = function() {
+        let isValid = true;
+        
+        if (!newPasswordInput.value.trim()) {
+            showPopup('Введите пароль', 'error');
+            isValid = false;
+        }
+
+        if (!newUsernameInput.value.trim()) {
+            showPopup('Введите логин', 'error');
+            isValid = false;
+        }
+
+        if (isValid) {
+            createAdminForm.submit();
+            addAdminModal.style.display = 'none';
+            addAdminModalBackdrop.style.display = 'none';
+        }
+    };
+    addAdminModalBackdrop.onclick = cancelAddAdminModalBtn.onclick;
+
+    // Логика для модального окна удаления администратора
+    const deleteAdminModal = document.getElementById('deleteAdminModal');
+    const deleteAdminModalBackdrop = document.getElementById('deleteAdminModalBackdrop');
+    const cancelDeleteAdminModalBtn = document.getElementById('cancelDeleteAdminModal');
+    const confirmDeleteAdminBtn = document.getElementById('confirmDeleteAdmin');
+    const adminToDeleteSpan = document.getElementById('adminToDelete');
+    let currentAdminToDelete = '';
+
+    document.querySelectorAll('.delete-admin-btn').forEach(button => {
+        button.onclick = function() {
+            currentAdminToDelete = this.dataset.username;
+            adminToDeleteSpan.textContent = currentAdminToDelete;
+            deleteAdminModal.style.display = 'block';
+            deleteAdminModalBackdrop.style.display = 'block';
+        };
+    });
+
+    cancelDeleteAdminModalBtn.onclick = function() {
+        deleteAdminModal.style.display = 'none';
+        deleteAdminModalBackdrop.style.display = 'none';
+    };
+
+    confirmDeleteAdminBtn.onclick = function() {
+        // Отправка формы удаления
+        const deleteForm = document.createElement('form');
+        deleteForm.method = 'post';
+        deleteForm.action = '@Url.Action("DeleteAdmin", "Home")';
+        
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'username';
+        input.value = currentAdminToDelete;
+        deleteForm.appendChild(input);
+        
+        document.body.appendChild(deleteForm);
+        deleteForm.submit();
+
+        deleteAdminModal.style.display = 'none';
+        deleteAdminModalBackdrop.style.display = 'none';
+    };
+    deleteAdminModalBackdrop.onclick = cancelDeleteAdminModalBtn.onclick;
+
+    // Отображение успешного сообщения, если оно есть (из HomeController)
+    const message = '@Html.Raw(Json.Serialize(ViewBag.Message))';
+    if (message && message !== 'null') {
+        const parsedMessage = JSON.parse(message);
+        if (parsedMessage.includes('удалён')) {
+            showPopup('Администратор успешно удалён!', 'success');
+        } else if (parsedMessage.includes('добавлен')) {
+            showPopup('Администратор добавлен!', 'success');
+        } else {
+            showPopup(parsedMessage, 'error'); // Для остальных ошибок показываем сообщение как есть
+        }
+    }
+</script>
+}

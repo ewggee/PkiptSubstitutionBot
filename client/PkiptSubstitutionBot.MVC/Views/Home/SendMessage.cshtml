@@ -1,0 +1,91 @@
+@{
+    ViewData["Title"] = "Отправка сообщения";
+}
+
+<h1 class="mb-4 text-center">@ViewData["Title"]</h1>
+
+<div class="form-narrow">
+<form id="sendMessageForm" asp-action="SendMessage" method="post" autocomplete="off">
+    <div class="form-group mb-4">
+        <label class="mb-2" for="message">Введите сообщение:</label>
+        <textarea name="message" id="message" class="form-control" rows="5"></textarea>
+    </div>
+    <button type="button" class="btn btn-primary w-100 mt-4" id="showConfirmModal">Отправить</button>
+</form>
+</div>
+
+<div id="globalMessage" class="popup-message" style="display:none;"></div>
+
+<!-- Модальное окно подтверждения -->
+<div id="confirmModalBackdrop" class="modal-backdrop" style="display:none;"></div>
+<div id="confirmModal" class="modal-custom" style="display:none;">
+    <div class="modal-header">Вы точно хотите отправить это сообщение?</div>
+    <div class="modal-body text-center">
+        <div id="messagePreview" style="white-space: pre-line; color: #fff; background: #181a1b; border-radius: 8px; padding: 12px; min-height: 48px; max-width: 100%; max-height: 250px; overflow-y: auto; overflow-x: hidden; margin: 0 auto;">Сообщение не введено</div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="cancelModal">Отмена</button>
+        <button type="button" class="btn btn-primary" id="confirmSend">Подтвердить</button>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const showModalBtn = document.getElementById('showConfirmModal');
+    const modal = document.getElementById('confirmModal');
+    const backdrop = document.getElementById('confirmModalBackdrop');
+    const cancelBtn = document.getElementById('cancelModal');
+    const confirmBtn = document.getElementById('confirmSend');
+    const form = document.getElementById('sendMessageForm');
+    const messageInput = document.getElementById('message');
+    const messagePreview = document.getElementById('messagePreview');
+    const globalMessage = document.getElementById('globalMessage');
+
+    function showPopup(message, type) {
+        globalMessage.textContent = message;
+        globalMessage.className = `popup-message show popup-${type}`;
+        globalMessage.style.display = 'block';
+        setTimeout(() => {
+            globalMessage.classList.remove('show');
+            globalMessage.style.display = 'none';
+        }, 3000);
+    }
+
+    showModalBtn.onclick = function(e) {
+        e.preventDefault();
+
+        if (!messageInput.value.trim()) {
+            showPopup('Введите сообщение', 'error');
+            return;
+        }
+
+        const text = messageInput.value.trim();
+        if (text) {
+            messagePreview.textContent = text;
+        } else {
+            messagePreview.textContent = 'Пустое сообщение';
+        }
+        modal.style.display = 'block';
+        backdrop.style.display = 'block';
+    };
+
+    cancelBtn.onclick = function() {
+        modal.style.display = 'none';
+        backdrop.style.display = 'none';
+    };
+
+    confirmBtn.onclick = function() {
+        modal.style.display = 'none';
+        backdrop.style.display = 'none';
+        form.submit();
+    };
+    
+    backdrop.onclick = cancelBtn.onclick;
+
+    // Отображение успешного сообщения, если оно есть
+    const message = '@Html.Raw(Json.Serialize(ViewBag.Message))';
+    if (message && message !== 'null') {
+        showPopup('Сообщение отправлено!', 'success');
+    }
+</script>
+} 

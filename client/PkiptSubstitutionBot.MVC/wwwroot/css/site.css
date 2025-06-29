@@ -1,0 +1,351 @@
+html, body {
+  height: 100%;
+  background: #181a1b;
+  color: #f1f1f1;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.center-card {
+  background: #23272b;
+  border-radius: 16px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.5);
+  padding: 32px 24px 40px 24px;
+  min-width: 350px;
+  max-width: 1000px;
+  width: 100%;
+  margin: 32px 0 40px 0;
+}
+
+@media (max-width: 900px) {
+  .center-card {
+    max-width: 98vw;
+    padding: 16px 4vw;
+  }
+}
+
+.form-narrow {
+  max-width: 400px;
+  margin: 0 auto;
+}
+.form-narrow .form-group {
+  margin-bottom: 24px;
+  }
+.form-narrow .form-control {
+  width: 100%;
+}
+
+.nav-tabs-dark {
+  border-bottom: 1px solid #444;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.nav-tabs-dark .nav-item {
+  flex: 1 1 0;
+  text-align: center;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.nav-tabs-dark .nav-link {
+  color: #bbb;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-bottom 0.2s, font-size 0.2s;
+  width: 100%;
+  border-radius: 0;
+  font-size: 16px;
+  padding-bottom: 8px;
+  line-height: 1.2;
+  min-height: 38px;
+}
+.nav-tabs-dark .nav-link.active {
+  color: #fff;
+  border-bottom: 2px solid #0d6efd;
+  background: #23272b;
+  font-size: 22px;
+  font-weight: 600;
+  padding-bottom: 6px;
+}
+
+.form-control, .form-control:focus {
+  background: #181a1b;
+  color: #f1f1f1;
+  border: 1px solid #444;
+}
+
+.btn-primary {
+  background: #0d6efd;
+  border: none;
+}
+.btn-primary:hover {
+  background: #0b5ed7;
+}
+
+.alert-info {
+  background: #222d3d;
+  color: #b8e0ff;
+  border: 1px solid #0d6efd;
+  word-break: break-word;
+  max-width: 100%;
+  white-space: pre-line;
+  overflow-wrap: break-word;
+}
+
+/* Modal styles */
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 1040;
+}
+.modal-custom {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: #23272b;
+  color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.7);
+  z-index: 1050;
+  padding: 32px 24px;
+  min-width: 320px;
+  max-width: 500px;
+  width: 100%;
+}
+.modal-custom .modal-header {
+  font-size: 1.2rem;
+  margin-bottom: 16px;
+}
+.modal-custom .modal-footer {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+.modal-custom .modal-body {
+  max-width: 100%;
+  max-height: unset;
+  overflow-y: unset;
+  overflow-x: unset;
+  word-break: break-word;
+  white-space: pre-line;
+}
+
+#messagePreview {
+  word-break: break-word;
+  white-space: pre-line;
+  max-width: 100%;
+  max-height: 150px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin: 0 auto;
+}
+
+#previewImage {
+    max-height: 180px !important; /* Уменьшаем высоту изображения для предотвращения скролла */
+}
+
+/* Общие стили для всплывающих подсказок */
+.popup-message {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 20px 24px;
+    border-radius: 16px;
+    font-weight: bold;
+    z-index: 1060;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    text-align: center;
+    width: auto;
+    max-width: 90vw;
+    min-width: 300px;
+    white-space: pre-line;
+    word-wrap: break-word;
+    background: #23272b;
+}
+.popup-message.show {
+    opacity: 1;
+}
+
+.popup-error {
+    background: #23272b;
+    color: #ff6666;
+    border: none;
+}
+
+.popup-success {
+    background: #23272b;
+    color: #66ff66;
+    border: none;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+/* Стиль для скроллбара в WebKit-браузерах */
+::-webkit-scrollbar {
+  width: 8px; /* Ширина скроллбара */
+  height: 8px; /* Высота скроллбара для горизонтальных */
+}
+
+::-webkit-scrollbar-track {
+  background: #2b2f33; /* Цвет фона дорожки скроллбара */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #555; /* Цвет ползунка скроллбара */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #777; /* Цвет ползунка при наведении */
+}
+
+/* Для Firefox */
+* {
+  scrollbar-width: thin; /* Тонкий скроллбар */
+  scrollbar-color: #555 #2b2f33; /* Цвет ползунка и дорожки */
+}
+
+/* Custom file upload button styles */
+.custom-file-upload {
+    display: inline-block;
+    padding: 12px 20px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    font-weight: 500;
+    /* Inherit button styles from .btn-secondary */
+    background-color: #6c757d; /* Bootstrap's btn-secondary background */
+    color: #fff; /* Bootstrap's btn-secondary text color */
+    border: 1px solid #6c757d; /* Bootstrap's btn-secondary border */
+}
+
+.custom-file-upload:hover {
+    background-color: #5a6268; /* Darker on hover */
+    border-color: #545b62;
+}
+
+/* Logout button styles */
+.logout-link button {
+    background: none; /* Remove background */
+    color: #cf6767; /* Maroon color */
+    border: none;
+    padding: 0;
+    font-size: 0.9em;
+    cursor: pointer;
+    font-size: 18px;
+    /*text-decoration: underline;*/ /* Underline to look like a link */
+    transition: color 0.3s ease; /* Smooth transition for color */
+}
+
+.logout-link button:hover {
+    color: #808080; /* Gray on hover */
+    text-decoration: none; /* Remove underline on hover */
+}
+
+.logout-link button:active {
+    color: #8b8b8b; /* Slightly darker gray on active */
+}
+
+/* User info container adjustments */
+.user-info-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    text-align: right;
+}
+
+.user-info-container span {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: normal;
+    font-size: 1.1em;
+    color: #f0f0f0;
+}
+
+/* Switch toggle for Remember Me */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px; /* Width of the switch */
+    height: 28px; /* Height of the switch */
+}
+
+.switch input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #515151;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: #198754;
+}
+
+input:focus + .slider {
+    /* Removed box-shadow: 0 0 1px #2196F3; */
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(22px);
+    -ms-transform: translateX(22px);
+    transform: translateX(22px);
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 28px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.form-check-label {
+    cursor: pointer;
+    font-size: 18px; /* Increased font size */
+}

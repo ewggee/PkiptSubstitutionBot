@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - PkiptSubstitutionBot.MVC</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/PkiptSubstitutionBot.MVC.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="user-info-container">
+        <span id="greeting-message"></span>
+        <input type="hidden" id="loggedInUsername" value="@User.FindFirst("username")?.Value" />
+        <form method="post" asp-controller="Home" asp-action="Logout" class="logout-link">
+            <button type="submit">Выйти</button>
+        </form>
+    </div>
+    <div class="center-card">
+        <ul class="nav nav-tabs nav-tabs-dark mb-4 justify-content-center">
+            <li class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "UploadImage" ? "active" : "")" asp-area="" asp-controller="Home" asp-action="UploadImage">Отправить замены</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "SendMessage" ? "active" : "")" asp-area="" asp-controller="Home" asp-action="SendMessage">Отправить сообщение</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Administrators" ? "active" : "")" asp-area="" asp-controller="Home" asp-action="Administrators">Администраторы</a>
+            </li>
+        </ul>
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
